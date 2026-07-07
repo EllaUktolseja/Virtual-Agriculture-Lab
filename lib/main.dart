@@ -87,7 +87,12 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
         _pushCustomPage(SetupEksperimenPage(
           tanamanData: tanaman,
           onBack: () => setState(() => _customPage = null),
-          onStartSimulation: () => _navigateToTab(3),
+          onStartSimulation: () => _pushCustomPage(
+            HasilSimulasiPage(
+              onBack: () => setState(() => _customPage = null),
+              onRestart: () => _navigateToTab(1),
+            ),
+          ),
         ));
       }),
       const PlaceholderPage(title: 'Eksperimen', icon: Icons.science),
