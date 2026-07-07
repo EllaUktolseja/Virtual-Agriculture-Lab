@@ -3,6 +3,12 @@ import 'package:agro_lab_app/pages/dashboard_page.dart';
 import 'package:agro_lab_app/pages/jelajah_page.dart';
 import 'package:agro_lab_app/pages/setup_page.dart';
 import 'package:agro_lab_app/pages/hasil_page.dart';
+import 'package:agro_lab_app/pages/histori_eksperimen_page.dart';
+import 'package:agro_lab_app/pages/compare_scenario_page.dart';
+import 'package:agro_lab_app/pages/panduan_riset_page.dart';
+import 'package:agro_lab_app/pages/splash_page.dart';
+import 'package:agro_lab_app/pages/login_page.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -18,43 +24,46 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFF9FBF7),
         fontFamily: 'Inter',
+        useMaterial3: true,
       ),
-      home: const MainNavigationContainer(),
+      home: const AppEntryFlow(),
     );
   }
 }
-class PlaceholderPage extends StatelessWidget {
-  final String title;
-  final IconData icon;
 
-  const PlaceholderPage({super.key, required this.title, required this.icon});
+class AppEntryFlow extends StatefulWidget {
+  const AppEntryFlow({super.key});
+
+  @override
+  State<AppEntryFlow> createState() => _AppEntryFlowState();
+}
+
+class _AppEntryFlowState extends State<AppEntryFlow> {
+  bool _showSplash = true;
+  bool _isLoggedIn = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF9FBF7),
-        elevation: 0,
-        title: Text(title, style: const TextStyle(color: Color(0xFF0F3A1A), fontWeight: FontWeight.bold)),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 96, color: const Color(0xFF0F3A1A)),
-            const SizedBox(height: 24),
-            Text(
-              'Halaman $title belum tersedia.',
-              style: const TextStyle(fontSize: 18, color: Color(0xFF556353)),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
+    if (_showSplash) {
+      return SplashPage(
+        onContinue: () {
+          setState(() => _showSplash = false);
+        },
+      );
+    }
+
+    if (!_isLoggedIn) {
+      return LoginPage(
+        onLogin: () {
+          setState(() => _isLoggedIn = true);
+        },
+      );
+    }
+
+    return const MainNavigationContainer();
   }
 }
+
 class MainNavigationContainer extends StatefulWidget {
   const MainNavigationContainer({super.key});
 
@@ -79,24 +88,51 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
     });
   }
 
+  void _openExperimentSelection() {
+    _pushCustomPage(
+      PilihKomoditasPage(
+        onSelectTanaman: _openSetupExperiment,
+      ),
+    );
+  }
+
+  void _openSetupExperiment(Map<String, dynamic> tanaman) {
+    _pushCustomPage(
+      SetupEksperimenPage(
+        tanamanData: tanaman,
+        onBack: _openExperimentSelection,
+        onStartSimulation: () => _openSimulationResult(tanaman),
+      ),
+    );
+  }
+
+  void _openSimulationResult(Map<String, dynamic> tanaman) {
+    _pushCustomPage(
+      HasilSimulasiPage(
+        onBack: () => _openSetupExperiment(tanaman),
+        onRestart: _openExperimentSelection,
+      ),
+    );
+  }
+
+  void _openCompareScenario() {
+    _pushCustomPage(
+      CompareScenarioPage(
+        onBack: () => _navigateToTab(2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> basePages = [
-      DashboardPage(onStartExperiment: () => _navigateToTab(1)),
-      PilihKomoditasPage(onSelectTanaman: (tanaman) {
-        _pushCustomPage(SetupEksperimenPage(
-          tanamanData: tanaman,
-          onBack: () => setState(() => _customPage = null),
-          onStartSimulation: () => _pushCustomPage(
-            HasilSimulasiPage(
-              onBack: () => setState(() => _customPage = null),
-              onRestart: () => _navigateToTab(1),
-            ),
-          ),
-        ));
-      }),
-      const PlaceholderPage(title: 'Eksperimen', icon: Icons.science),
-      const PlaceholderPage(title: 'Simulasi AR', icon: Icons.view_in_ar),
+      DashboardPage(onStartExperiment: _openExperimentSelection),
+      PilihKomoditasPage(onSelectTanaman: _openSetupExperiment),
+      HistoriEksperimenPage(
+        onCompare: _openCompareScenario,
+        onStartNewExperiment: _openExperimentSelection,
+      ),
+      const PanduanRisetPage(),
     ];
 
     final Widget currentPage = _customPage ?? basePages[_currentIndex];
@@ -111,12 +147,24 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
         unselectedItemColor: Colors.grey,
         selectedFontSize: 11,
         unselectedFontSize: 11,
-        onTap: (index) => _navigateToTab(index),
+        onTap: _navigateToTab,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.eco), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Jelajah'),
-          BottomNavigationBarItem(icon: Icon(Icons.science), label: 'Eksperimen'),
-          BottomNavigationBarItem(icon: Icon(Icons.view_in_ar), label: 'Simulasi'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_rounded),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.explore_rounded),
+            label: 'Jelajah',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.science_rounded),
+            label: 'Eksperimen',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book_rounded),
+            label: 'Riset',
+          ),
         ],
       ),
     );

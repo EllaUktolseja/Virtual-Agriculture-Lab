@@ -5,8 +5,8 @@ class HasilSimulasiPage extends StatelessWidget {
   final VoidCallback onRestart;
 
   const HasilSimulasiPage({
-    super.key, 
-    required this.onBack, 
+    super.key,
+    required this.onBack,
     required this.onRestart,
   });
 
@@ -38,7 +38,6 @@ class HasilSimulasiPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Breadcrumbs text
             const Text(
               'Simulasi  >  Jagung Hibrida',
               style: TextStyle(fontSize: 12, color: Colors.grey),
@@ -50,7 +49,6 @@ class HasilSimulasiPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Header Banner: Simulasi Selesai
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -90,7 +88,6 @@ class HasilSimulasiPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // Proyeksi Pertumbuhan (Card Grafik Placeholder)
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -124,7 +121,6 @@ class HasilSimulasiPage extends StatelessWidget {
                     label: const Icon(Icons.keyboard_arrow_down, size: 16),
                   ),
                   const SizedBox(height: 20),
-                  // Placeholder Area Grafik
                   SizedBox(
                     height: 150,
                     child: Center(
@@ -132,7 +128,6 @@ class HasilSimulasiPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Legenda Grafik
                   const Row(
                     children: [
                       Icon(Icons.circle, size: 10, color: Colors.brown),
@@ -149,7 +144,6 @@ class HasilSimulasiPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // Analisis Lingkungan (Warning Card)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -182,7 +176,6 @@ class HasilSimulasiPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // Inner Box: Rekomendasi
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
@@ -206,7 +199,6 @@ class HasilSimulasiPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // Badges
                   Row(
                     children: [
                       _buildMiniBadge('pH 4.5 Kritis', const Color(0xFFFFF0EE), const Color(0xFFC0392B)),
@@ -219,7 +211,6 @@ class HasilSimulasiPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // Button Buka AR Viewer
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0F3A1A),
@@ -227,20 +218,24 @@ class HasilSimulasiPage extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 elevation: 0,
               ),
-              onPressed: () {},
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Fitur AR Viewer akan dikembangkan pada tahap berikutnya.'),
+                  ),
+                );
+              },
               icon: const Icon(Icons.view_in_ar, color: Colors.white),
               label: const Text('Buka AR Viewer', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 28),
 
-            // Indikator Vital Section
             const Text(
               'Indikator Vital',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F3A1A)),
             ),
             const SizedBox(height: 12),
-            
-            // Grid Indikator (Kesehatan, Estimasi Panen, Efisiensi Air)
+
             Row(
               children: [
                 Expanded(child: _buildVitalCard('Kesehatan', child: const Icon(Icons.favorite, color: Colors.red, size: 40))),
@@ -253,12 +248,11 @@ class HasilSimulasiPage extends StatelessWidget {
               children: [
                 Expanded(child: _buildVitalCard('Efisiensi Air', child: _buildCircularIndicator(0.85, '85%', const Color(0xFF0F3A1A)))),
                 const SizedBox(width: 12),
-                const Expanded(child: SizedBox()), // Kosong agar simetris sesuai gambar grid bawahnya ganjil
+                const Expanded(child: SizedBox()),
               ],
             ),
             const SizedBox(height: 32),
 
-            // Action Buttons Bawah
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0F3A1A),
@@ -266,7 +260,13 @@ class HasilSimulasiPage extends StatelessWidget {
                 minimumSize: const Size(double.infinity, 48),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: () {},
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Fitur unduh PDF akan dikembangkan pada tahap berikutnya.'),
+                  ),
+                );
+              },
               icon: const Icon(Icons.download),
               label: const Text('Unduh Laporan PDF', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
@@ -288,7 +288,6 @@ class HasilSimulasiPage extends StatelessWidget {
     );
   }
 
-  // Helper Widget: Badge kecil di dalam kartu warning
   Widget _buildMiniBadge(String label, Color bgColor, Color textColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -301,7 +300,6 @@ class HasilSimulasiPage extends StatelessWidget {
     );
   }
 
-  // Helper Widget: Card untuk Indikator Vital
   Widget _buildVitalCard(String title, {required Widget child}) {
     return Container(
       height: 140,
@@ -326,7 +324,6 @@ class HasilSimulasiPage extends StatelessWidget {
     );
   }
 
-  // Helper Widget: Lingkaran Progres Persentase (42% & 85%)
   Widget _buildCircularIndicator(double value, String percentage, Color color) {
     return Stack(
       alignment: Alignment.center,
